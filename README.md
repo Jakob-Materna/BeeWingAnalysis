@@ -25,4 +25,4 @@ This repository is used for segmenting wing structures and predicting wing segme
  - **3-2-ProcessPredictions.ipynb** Measures predicted segment areas
  - **3-3-Visualisation.ipynb** Visualizes predicted areas on top of the input images
 
-![workflow](https://github.com/user-attachments/assets/a286d8d7-0213-45bb-b912-4d5fc76a837d)
+![workflow](https://github.com/user-attachments/assets/15943abc-ebec-44ad-a85b-28a3dad383ae)
