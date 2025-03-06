@@ -2,6 +2,8 @@
 
 This repository is used for segmenting wing structures and predicting wing segments and age from photographs and scans of bee wing images. The preprocessing utilizes Segment-Anything, followed by training and prediction using UNet++ models.
 
+## Scripts
+
 ### 0: Helper scripts
  - **0-ImageSorter.ipynb:** Tool for manually sorting images into two categories using keyboard input
  - **0-MeasureDistance.ipynb:** Tool for manual distance measurement
@@ -27,4 +29,4 @@ This repository is used for segmenting wing structures and predicting wing segme
 
 ## Workflow
 
-![workflow](https://github.com/user-attachments/assets/15943abc-ebec-44ad-a85b-28a3dad383ae)
+![workflow](https://github.com/user-attachments/assets/c960d627-5cad-4617-8bff-7f6bcd965509)
