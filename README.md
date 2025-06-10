@@ -2,11 +2,6 @@
 
 Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells, age and weight from photographs and scans of bee wing images. The preprocessing uses Segment-Anything, followed by training and prediction using CNN models.
 
-## Workflow
-
-![workflow-dark](https://github.com/user-attachments/assets/8614bde0-261d-4586-8188-b7b2b3299ebb)
-
-
 ## Usage
 
 Install the dependencies using conda and activate the environment. There is a separate environment for model training and prediction.
@@ -21,6 +16,14 @@ The used [Segment Anything](https://github.com/facebookresearch/segment-anything
   - `vit_h`: [ViT-H SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
   - `vit_l`: [ViT-L SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
   - `vit_b`: [ViT-B SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth) 
+
+
+## Workflow
+
+The scripts in this repository are prefixed by their role in the workflow. Scripts prefixed with 0 are general-purpose helper tools. Prefix 1 indicates preprocessing steps for scanned bee wings, 2 refers to preprocessing of live bee wing photographs. Scripts starting with 3 handle postprocessing of semantic segmentations. Scripts with prefix 4 are optional scripts for preparing various input data sets for age and weight predictions. Scripts with 5 include visualization and model evaluation scripts.
+
+![workflow-dark](https://github.com/user-attachments/assets/8614bde0-261d-4586-8188-b7b2b3299ebb)
+
 ## Scripts
 
 The subdirectories contain the code for the convolutional neural networks. The main directory contains preprocessing and visualization scripts. 
