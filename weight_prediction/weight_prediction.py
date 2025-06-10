@@ -29,11 +29,11 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 from albumentations.pytorch import ToTensorV2
 
 
-parser = argparse.ArgumentParser(description="Segmentation model runner")
-parser.add_argument("--train", action='store_true', help="Flag for Training model", default=False)
+parser = argparse.ArgumentParser(description="Weight prediction model")
+parser.add_argument("--train", action='store_true', help="Training model", default=False)
 parser.add_argument("--checkpoint", type=str, help="Path to checkpoint file to load into model", default=None)
-parser.add_argument("--predict", action='store_true', help="Flag for just predicting from model (exclusive from train)")
-parser.add_argument("--dataPath", type=str, help="Path to find data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
+parser.add_argument("--predict", action='store_true', help="Predicting from model")
+parser.add_argument("--dataPath", type=str, help="Path to data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
 
 args = parser.parse_args()
 
@@ -80,8 +80,8 @@ class wing_dataset(data.Dataset):
     def __init__(self, dataPath='wings', _set='train', transform = None, augment=None, predict=False):
         self.set = _set
         self.dataPath = dataPath
-        self.transform = transform # This is transofrmations like rotation, resizing that should be applied to both the mask and input image
-        self.augment = augment # This is tranformations only applied to the input image ie, color jitter, contrast, brightness, etc.
+        self.transform = transform
+        self.augment = augment
         self.predict = predict
         self.to_tensor = A.Compose([ToTensorV2()])
 
@@ -100,11 +100,10 @@ class wing_dataset(data.Dataset):
         fp = self.img_list[idx]
         fn = Path(fp).name
         
-        # Only try to get weight if not in prediction mode
         if not self.predict:
             weight = float(self.weights[fn])
         else:
-            weight = 0  # Default value for prediction mode
+            weight = 0
         
         if self.transform:
             img = self.transform(image=img)['image']
@@ -135,9 +134,8 @@ class WingWeightPredictionExperiment(pl.LightningModule):
         self.loss_fn = nn.MSELoss()
 
     def forward(self, images):
-        # Normalize image
         images = (images - self.mean) / self.std
-        pred = self.model(images)#['out'] # out for pytorch model
+        pred = self.model(images)
         return pred
     
     def training_step(self, batch, batch_idx):
@@ -166,19 +164,15 @@ class WingWeightPredictionExperiment(pl.LightningModule):
         predictions = []
 
         for i, fn in enumerate(fns):
-            pred = preds[i]  # Extract single prediction (shape: [1])
+            pred = preds[i]
 
             if pred.dim() != 1:
                 raise ValueError(f"Unexpected shape for pred: {pred.shape}, expected [1] for regression")
 
-            # Convert tensor to scalar
             pred_value = pred.item()
             predictions.append((fn, pred_value))
 
-        # Define CSV file path (one-time save per batch)
         csv_path = os.path.join(self.trainer.datamodule.dataPath, "WeightPredictions.csv")
-
-        # Write to CSV file
         write_header = not os.path.exists(csv_path)
         with open(csv_path, mode='a', newline='') as file:
             writer = csv.writer(file)
@@ -206,8 +200,6 @@ class WingWeightPredictionExperiment(pl.LightningModule):
         self.save_predictions()
     
     def save_predictions(self):
-        # Get sample reconstruction image
-
         fns = []
         labels = []
         preds = []
@@ -285,7 +277,6 @@ tb_logger = TensorBoardLogger(
     name='WingingItResNet',
 )
 
-# For reproducibility
 seed_everything(42, True)
 Path(f"{tb_logger.log_dir}/train").mkdir(exist_ok=True, parents=True)
 Path(f"{tb_logger.log_dir}/val").mkdir(exist_ok=True, parents=True)
@@ -318,7 +309,6 @@ if __name__ == "__main__":
     if args.predict:
         data = PredictWeightRegressionData(args.dataPath)
         trainer.predict(experiment, dataloaders=data)
-        # Access the prediction dataset again
         dataloader = data.predict_dataloader()
         os.makedirs(os.path.join(args.dataPath, "predictions", "gradcams"), exist_ok=True)
 

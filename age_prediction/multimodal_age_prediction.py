@@ -29,11 +29,11 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 from albumentations.pytorch import ToTensorV2
 
 
-parser = argparse.ArgumentParser(description="Segmentation model runner")
-parser.add_argument("--train", action='store_true', help="Flag for Training model", default=False)
+parser = argparse.ArgumentParser(description="Age prediction model")
+parser.add_argument("--train", action='store_true', help="Training model", default=False)
 parser.add_argument("--checkpoint", type=str, help="Path to checkpoint file to load into model", default=None)
-parser.add_argument("--predict", action='store_true', help="Flag for just predicting from model (exclusive from train)")
-parser.add_argument("--dataPath", type=str, help="Path to find data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
+parser.add_argument("--predict", action='store_true', help="Predicting from model")
+parser.add_argument("--dataPath", type=str, help="Path to data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
 
 args = parser.parse_args()
 
@@ -55,7 +55,6 @@ def generate_gradcam(model, image_tensor, orig_image_np, save_path):
         def __call__(self, model_output):
             return model_output[:, self.output_index] if model_output.dim() > 1 else model_output[self.output_index]
 
-    # Create dummy features (batch size = 1, feature dim = model.geometry_fc[0].in_features)
     feat_input_dim = model.features_fc[0].in_features
     dummy_features = torch.zeros((1, feat_input_dim), device=device)
 
@@ -84,8 +83,8 @@ class wing_dataset(data.Dataset):
     def __init__(self, dataPath='wings', _set='train', transform=None, augment=None, predict=False):
         self.set = _set
         self.dataPath = dataPath
-        self.transform = transform # This is transofrmations like rotation, resizing that should be applied to both the mask and input image
-        self.augment = augment # This is tranformations only applied to the input image ie, color jitter, contrast, brightness, etc.
+        self.transform = transform
+        self.augment = augment
         self.predict = predict
         self.to_tensor = A.Compose([ToTensorV2()])
 
@@ -106,11 +105,10 @@ class wing_dataset(data.Dataset):
         fp = self.img_list[idx]
         fn = Path(fp).name
         
-        # Only try to get age if not in prediction mode
         if not self.predict:
             age = int(self.ages[fn])
         else:
-            age = 0  # Default value for prediction mode
+            age = 0 
         
         if self.transform:
             img = self.transform(image=img)['image']
@@ -187,8 +185,8 @@ class WingAgePredictionExperiment(pl.LightningModule):
         predictions = []
 
         for i, fn in enumerate(fns):
-            pred = preds[i]  # Tensor with a single value
-            pred_value = pred.item()  # Convert to scalar
+            pred = preds[i]
+            pred_value = pred.item() 
             predictions.append((fn, pred_value))
 
         csv_path = os.path.join(self.trainer.datamodule.dataPath, "AgePredictions.csv")
@@ -306,7 +304,6 @@ tb_logger = TensorBoardLogger(
     name='WingingItResNet',
 )
 
-# For reproducibility
 seed_everything(42, True)
 Path(f"{tb_logger.log_dir}/train").mkdir(exist_ok=True, parents=True)
 Path(f"{tb_logger.log_dir}/val").mkdir(exist_ok=True, parents=True)
@@ -339,7 +336,6 @@ if __name__ == "__main__":
     if args.predict:
         data = PredictAgeRegressionData(args.dataPath)
         trainer.predict(experiment, dataloaders=data)
-        # Access the prediction dataset again
         dataloader = data.predict_dataloader()
         os.makedirs(os.path.join(args.dataPath, "predictions", "gradcams"), exist_ok=True)
 

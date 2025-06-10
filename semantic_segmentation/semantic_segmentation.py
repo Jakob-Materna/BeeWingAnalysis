@@ -22,11 +22,11 @@ from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from albumentations.pytorch import ToTensorV2
 
 
-parser = argparse.ArgumentParser(description="Segmentation model runner")
-parser.add_argument("--train", action='store_true', help="Flag for Training model", default=False)
+parser = argparse.ArgumentParser(description="Semantic segmentation model")
+parser.add_argument("--train", action='store_true', help="Training model", default=False)
 parser.add_argument("--checkpoint", type=str, help="Path to checkpoint file to load into model", default=None)
-parser.add_argument("--predict", action='store_true', help="Flag for just predicting from model (exclusive from train)")
-parser.add_argument("--dataPath", type=str, help="Path to find data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
+parser.add_argument("--predict", action='store_true', help="Predicting from model")
+parser.add_argument("--dataPath", type=str, help="Path to data. If training should have train and val subfolders, if predicting should have subfolder called 'to_predict'")
 
 args = parser.parse_args()
 
@@ -37,8 +37,8 @@ class wing_dataset(data.Dataset):
     def __init__(self, dataPath='wings', _set='train', transform = None, augment=None, predict=False):
         self.set = _set
         self.dataPath = dataPath
-        self.transform = transform # This is transofrmations like rotation, resizing that should be applied to both the mask and input image
-        self.augment = augment # This is tranformations only applied to the input image ie, color jitter, contrast, brightness, etc.
+        self.transform = transform
+        self.augment = augment
         self.predict = predict
         self.to_tensor = A.Compose([ToTensorV2()])
 
@@ -102,7 +102,6 @@ class WingSegmentationExperiment(pl.LightningModule):
             classes=7,
         )
 
-        # Preprocessing parameters for image normalization
         params = smp.encoders.get_preprocessing_params("resnext50_32x4d")
         self.number_of_classes = 7
         self.register_buffer("std", torch.tensor(params["std"]).view(1, 3, 1, 1))
@@ -111,16 +110,14 @@ class WingSegmentationExperiment(pl.LightningModule):
         self.loss_fn = smp.losses.DiceLoss(smp.losses.MULTICLASS_MODE, from_logits=True)
 
     def forward(self, images):
-        # Normalize image
         images = (images - self.mean) / self.std
-        pred = self.model(images) #['out'] # out for pytorch model
+        pred = self.model(images)
         return pred
     
     def training_step(self, batch, batch_idx):
         images = batch['image'].to(self.device)
         targets = batch['mask'].to(self.device).long()
         pred = self.forward(images)
-        # Ensure the logits mask is contiguous
         pred = pred.contiguous()
         loss = self.loss_fn(pred, targets)
         self.log("train_loss", loss)
@@ -131,7 +128,6 @@ class WingSegmentationExperiment(pl.LightningModule):
         targets = batch['mask'].to(self.device).long()
 
         pred = self.forward(images)
-        # Ensure the logits mask is contiguous for smp model
         pred = pred.contiguous()
         val_loss = self.loss_fn(pred, targets)
 
@@ -143,10 +139,7 @@ class WingSegmentationExperiment(pl.LightningModule):
         fps = batch['fp']
         fns = [x.split('/')[-1] for x in fps]
 
-
-
         preds = self.forward(images)
-        # Ensure the logits mask is contiguous for smp model
         preds = preds.contiguous()
 
         for i in range(len(fns)):
@@ -157,10 +150,7 @@ class WingSegmentationExperiment(pl.LightningModule):
 
             pred = pred.swapaxes(0,2)
             pred = pred.swapaxes(0,1)
-            # Apply softmax to get probabilities for multi-class segmentation
             pred = pred.softmax(dim=2)
-
-            # Convert probabilities to predicted class labels
             pred = pred.argmax(dim=2).long()
             pred = pred.cpu().detach().numpy()
             cv2.imwrite(new_fp, pred.astype('uint8'))
@@ -186,7 +176,6 @@ class WingSegmentationExperiment(pl.LightningModule):
         self.sample_images(_set='val')
     
     def sample_images(self, _set='train'):
-        # Get sample reconstruction image
         if _set == 'train':
             batch = next(iter(self.trainer.datamodule.train_dataloader()))
         else:
@@ -194,14 +183,8 @@ class WingSegmentationExperiment(pl.LightningModule):
         input, label = batch['image'], batch['mask']
         input = input.to(self.device).float()
         label = label.to(self.device)
-
-
-        # test_input, test_label = batch
         pred = self.forward(input)
-        # Apply softmax to get probabilities for multi-class segmentation
         prob_mask = pred.softmax(dim=1)
-
-        # Convert probabilities to predicted class labels
         pred_mask = prob_mask.argmax(dim=1).long()
 
         vutils.save_image(
@@ -285,7 +268,6 @@ tb_logger = TensorBoardLogger(
     name='WingingItUNetpp',
 )
 
-# For reproducibility
 seed_everything(42, True)
 Path(f"{tb_logger.log_dir}/train").mkdir(exist_ok=True, parents=True)
 Path(f"{tb_logger.log_dir}/val").mkdir(exist_ok=True, parents=True)
