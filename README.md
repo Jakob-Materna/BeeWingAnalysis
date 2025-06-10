@@ -2,7 +2,27 @@
 
 Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells, age and weight from photographs and scans of bee wing images. The preprocessing ueses Segment-Anything, followed by training and prediction using CNN models.
 
+## Workflow
+
+
+
+## Usage
+
+Install the dependencies using conda and activate the environment. There is a separate environment for model training and prediction.
+
+```
+conda env create -f environment.yml
+conda activate bee-wings
+```
+
+The used [Segment Anything](https://github.com/facebookresearch/segment-anything#installation) checkpoints must be downloaded separatly:
+
+  - `vit_h`: [ViT-H SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
+  - `vit_l`: [ViT-L SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
+  - `vit_b`: [ViT-B SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth) 
 ## Scripts
+
+The subdirectories contain the code for the convolutional neural networks. The main directory contains preprocessing and visualization scrpts. 
 
 ### 0: Helper scripts
  - **0-GetCoordinates.ipynb:** Tool for getting image coordinates with a mouse click. 
@@ -36,12 +56,9 @@ Repository for my Master's thesis in bioinformatics. The semi-automated wing seg
  - **4-Recenter.ipynb:** Recenters wings around the segmentated wing cells, removing variation in amount of visible wing base.
  - **4-RemovedFWL.ipynb:** Removes the forewing lobe using wing segmentations.
  - **4-StrictFilter.ipynb:** Sorts out bad quality live bee photographs with bad lighting or in which only parts of the wings were visible.
- - 
-### 5: 
+
+### 5: Visualization
  - **5-AgeHistogram.ipynb:** Creates an age histogram.
  - **5-AreaLossFWL.ipynb:** Shows the relationship between bee age and forewing lobe area with a linear trend line.
  - **5-ModelEvaluation.ipynb:** Visualizes model performance.
 
-## Workflow
-
-![workflow](https://github.com/user-attachments/assets/c960d627-5cad-4617-8bff-7f6bcd965509)
