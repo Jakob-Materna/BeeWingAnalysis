@@ -1,6 +1,6 @@
 # BeeWingAnalysis
 
-Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells, age and weight from photographs and scans of bee wing images. The preprocessing ueses Segment-Anything, followed by training and prediction using CNN models.
+Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells, age and weight from photographs and scans of bee wing images. The preprocessing uses Segment-Anything, followed by training and prediction using CNN models.
 
 ## Workflow
 
@@ -15,14 +15,14 @@ conda env create -f environment.yml
 conda activate bee-wings
 ```
 
-The used [Segment Anything](https://github.com/facebookresearch/segment-anything#installation) checkpoints must be downloaded separatly:
+The used [Segment Anything](https://github.com/facebookresearch/segment-anything#installation) checkpoints must be downloaded separately:
 
   - `vit_h`: [ViT-H SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
   - `vit_l`: [ViT-L SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
   - `vit_b`: [ViT-B SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth) 
 ## Scripts
 
-The subdirectories contain the code for the convolutional neural networks. The main directory contains preprocessing and visualization scrpts. 
+The subdirectories contain the code for the convolutional neural networks. The main directory contains preprocessing and visualization scripts. 
 
 ### 0: Helper scripts
  - **0-GetCoordinates.ipynb:** Tool for getting image coordinates with a mouse click. 
@@ -31,13 +31,13 @@ The subdirectories contain the code for the convolutional neural networks. The m
  - **0-TrainValTestSplit.ipynb:** Splits the data set into training, validation and test set.
  
 ### 1: Preprocessing wing scans
- - **1-1-ScansWingCropping.ipynb:** Loops through all Wing Scans, segments them into the individual wings and usees an OCR to extract the label number.
+ - **1-1-ScansWingCropping.ipynb:** Loops through all Wing Scans, segments them into the individual wings and uses an OCR to extract the label number.
  - **1-2-ScansManualImprovements.ipynb:** Renames wings with incorrect OCR results, adjust left/right wing identification, and deformed wings marked with an 'x'.
  - **1-3-ScansWingAlignment.ipynb:** Identifies the background using segment-anything and determines the wing orientation and height.
- - **1-4-ScansWingOrientation.ipynb:** Correctly orientates the images by detecting the black color at the top and base of the wing.
+ - **1-4-ScansWingOrientation.ipynb:** Correctly orients the images by detecting the black color at the top and base of the wing.
 
 ### 2: Preprocessing live bee wings
- - **2-1-LiveBeeLabelCropper.ipynb:**  Identifies the labels on the scaned sheets and saves them.
+ - **2-1-LiveBeeLabelCropper.ipynb:**  Identifies the labels on the scanned sheets and saves them.
  - **2-2-LiveBeeContourFinder.ipynb:** Identifies wing and marker contours on the label. The marker length is measured and the wing is cropped and saved.
  - **2-3-LiveBeeManualImprovements.ipynb:** Introduces manual corrections to wing cropping and marker length.
  - **2-4-LiveBeeBackgroundRemoval.ipynb:** Removes the background using segment-anything.
@@ -53,7 +53,7 @@ The subdirectories contain the code for the convolutional neural networks. The m
 ### 4: Prepare input data for age and weight predictions
  - **4-ApplyImageScale.ipynb:** Applies the image specific mm to pixel scale for each live bee image.
  - **4-OnlyFWL.ipynb:** Removes everything but the forewing lobe using wing segmentations.
- - **4-Recenter.ipynb:** Recenters wings around the segmentated wing cells, removing variation in amount of visible wing base.
+ - **4-Recenter.ipynb:** Recenters wings around the segmented wing cells, removing variation in amount of visible wing base.
  - **4-RemovedFWL.ipynb:** Removes the forewing lobe using wing segmentations.
  - **4-StrictFilter.ipynb:** Sorts out bad quality live bee photographs with bad lighting or in which only parts of the wings were visible.
 
