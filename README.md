@@ -1,6 +1,6 @@
 # BeeWingAnalysis
 
-Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells and age and weight prediction. The preprocessing uses Segment-Anything, followed by training and prediction of CNN models.
+Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells and age and weight prediction. The preprocessing uses [Segment Anything](https://github.com/facebookresearch/segment-anything#installation), followed by training and prediction of CNN models.
 
 ## Usage
 
@@ -11,7 +11,7 @@ conda env create -f environment.yml
 conda activate bee-wings
 ```
 
-The [Segment Anything](https://github.com/facebookresearch/segment-anything#installation)  checkpoints used during preprocessing must be downloaded separately:
+The [Segment-Anything](https://github.com/facebookresearch/segment-anything#installation)  checkpoints used during preprocessing must be downloaded separately:
 
   - `vit_h`: [ViT-H SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth)
   - `vit_l`: [ViT-L SAM model](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
@@ -27,7 +27,7 @@ python main.py --predict --checkpoint /path/to/checkpoint/ --dataPath /path/to/d
 
 The scripts in this repository are prefixed by their role in the workflow. Scripts prefixed with 0 are helper tools. Prefix 1 indicates preprocessing steps for scanned bee wings, 2 refers to preprocessing of live bee wing photographs. Scripts starting with 3 handle postprocessing of semantic segmentations. Scripts with prefix 4 are optional scripts for preparing various input data sets for age and weight predictions. Scripts with 5 include visualization and model evaluation scripts.
 
-![Uploading workflow.png…]()
+![workflow](https://github.com/user-attachments/assets/ee3d12c0-e329-40e2-87a6-feb05b522619)
 
 ## Scripts
 
