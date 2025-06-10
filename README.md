@@ -1,6 +1,6 @@
 # BeeWingAnalysis
 
-Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells, age and weight from photographs and scans of bee wing images. The preprocessing uses Segment-Anything, followed by training and prediction using CNN models.
+Repository for my Master's thesis in bioinformatics. The semi-automated wing segmentation tool developed for this project can be found [here](https://github.com/Jakob-Materna/SegmentAnywing). This repository is used for segmenting wing cells and age and weight prediction. The preprocessing uses Segment-Anything, followed by training and prediction of CNN models.
 
 ## Usage
 
