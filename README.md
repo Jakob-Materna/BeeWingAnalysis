@@ -4,7 +4,8 @@ Repository for my Master's thesis in bioinformatics. The semi-automated wing seg
 
 ## Workflow
 
-![workflow](https://github.com/user-attachments/assets/dc730302-d740-4c75-b558-7a4e36621b3d)
+![workflow-dark](https://github.com/user-attachments/assets/8614bde0-261d-4586-8188-b7b2b3299ebb)
+
 
 ## Usage
 
