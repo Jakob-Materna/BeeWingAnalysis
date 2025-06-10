@@ -27,7 +27,7 @@ python main.py --predict --checkpoint /path/to/checkpoint/ --dataPath /path/to/d
 
 The scripts in this repository are prefixed by their role in the workflow. Scripts prefixed with 0 are helper tools. Prefix 1 indicates preprocessing steps for scanned bee wings, 2 refers to preprocessing of live bee wing photographs. Scripts starting with 3 handle postprocessing of semantic segmentations. Scripts with prefix 4 are optional scripts for preparing various input data sets for age and weight predictions. Scripts with 5 include visualization and model evaluation scripts.
 
-![workflow-dark](https://github.com/user-attachments/assets/44f44906-40d4-4ce3-8555-7b4a85ffd455)
+![Uploading workflow.png…]()
 
 ## Scripts
 
